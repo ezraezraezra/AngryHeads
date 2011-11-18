@@ -1,0 +1,19 @@
+/**********************************************************************
+ * Developer:   Ezra Velazquez http://ezraezraezra.com
+ * Company:     TokBox         http://www.tokbox.com
+ * 
+ * Date:        November 2011
+ *
+ * Title:       AngryHeads     http://ezraezraezra.com/tb/AngryHeads
+ * Description: Proof-of-concept on the idea of TokBox's OpenTok API
+ *              mashed with the game mechanics of Angry Birds
+ *
+ * Tech:        AJAX, CSS, CSS3, HTML, HTML5, JavaScript, jQuery, 
+ *              OpenTok API, PHP
+ * Last Update: November 17th, 2011
+ ***********************************************************************/
+ 
+ NOTE: *** 3rd PARTY LIBRARIES HAVE BEEN OMITTED FROM THE PUBLIC REPO ***
+ 
+ Libraries Omitted:  OpenTok     http://www.tokbox.com
+                     jQuery      http://jquery.com

@@ -1,0 +1,213 @@
+/*
+ * Project:     AngryHeads
+ * Description: Proof-of-concept on the idea of TokBox's
+ *              OpenTok API mashed with the game
+ *              mechanics of Angry Birds          
+ * Website:     http://ezraezraezra.com/tb/AngryHeads
+ * 
+ * Author:      Ezra Velazquez
+ * Website:     http://ezraezraezra.com
+ * Date:        November 2011
+ * 
+ */
+@font-face {
+	font-family: Folk; src: url('../assets/Folksolid-webfont.ttf');
+}
+body {
+	background-color: #121212;
+}
+#canvas_background {
+	width: 1152px;
+	height: 525px;
+	background-color: #CCCCCC;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+#sky {
+	height: 475px;
+	width: 1152px;
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.21, #e4f7fa),
+		color-stop(0.41, #d6f2f9) );
+}
+#land {
+	height: 50px;
+	background-color: #6C0;
+}
+.ele {
+	width: 50px;
+	height: 50px;
+	background-color: #FFFFFF;
+	-moz-border-radius: 25px;
+	-webkit-border-radius: 25px;
+	float: left;
+	position: absolute;
+}
+.ele1 {
+	margin-left: 54px;
+	margin-top: 15px;
+}
+.ele2 {
+	margin-top: 29px;
+}
+.ele3 {
+	margin-top: 5px;
+	margin-left: 13px;
+}
+.ele4 {
+	margin-top: 39px;
+	margin-left: 32px;
+}
+#cloud_1 {
+	width: 110px;
+	height: 100px;
+	overflow: hidden;
+	margin-left: 50px;
+	padding-top: 10px;
+	-webkit-animation-name: cloudAnimation1;
+	-webkit-animation-duration: 120s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: linear;
+	background-color: transparent;
+}
+#cloud_2 {
+	width: 110px;
+	height: 100px;
+	overflow: hidden;
+	margin-top: 5px;
+	margin-left: -150px;
+	padding-top: 10px;
+	-webkit-animation-name: cloudAnimation2;
+	-webkit-animation-duration: 120s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: linear;
+	background-color: transparent;
+}
+#cloud_3 {
+	width: 110px;
+	height: 100px;
+	overflow: hidden;
+	margin-left: -50px;
+	padding-top: 10px;
+	-webkit-animation-name: cloudAnimation3;
+	-webkit-animation-duration: 120s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: linear;
+	background-color: transparent;
+}
+#cloud_4 {
+	width: 110px;
+	height: 100px;
+	overflow: hidden;
+	margin-top: -190px;
+	margin-left: -50px;
+	padding-top: 10px;
+	-webkit-animation-name: cloudAnimation4;
+	-webkit-animation-duration: 120s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: linear;
+	background-color: transparent;
+}
+@-webkit-keyframes cloudAnimation1 {
+	0%{margin-left:-60px;}
+	100%{margin-left:1052px;}
+}
+@-webkit-keyframes cloudAnimation2 {
+	0%{margin-left:-180px;}
+	100%{margin-left:932px;}
+}
+@-webkit-keyframes cloudAnimation3 {
+	0%{margin-left:-360px;}
+	100%{margin-left:692px;}
+}	
+@-webkit-keyframes cloudAnimation4 {
+	0%{margin-left:-270px;}
+	100%{margin-left:782px;}
+}	
+#container_game {
+	position: absolute;
+	background-color: transparent;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 500px;
+	cursor:pointer;
+	z-index: 10;
+}
+#game_canvas {
+	position: absolute;
+	background-color: transparent;
+	left: 0;
+	top: 0;
+	z-index: 1;
+}
+#missle {
+	position: absolute;
+	width: 75px;
+	height: 75px;
+	background-color: #808080;
+	top: 325px;
+	left: 120px;
+	cursor:pointer;
+	visibility:visible;
+}
+#module_button_close {
+	position: relative;
+	width: 150px;
+	height: 25px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: blue;
+	margin-top: 10px;
+	font-family: Folk;
+	font-size: 24px;
+	cursor:pointer;
+	display:none;
+}
+#module_camera {
+	position: absolute;
+	z-index: 500;
+	top: 200px;
+	left: 37%;
+	width: 270px;
+	height: 275px;
+	background-color: red;
+	border:#000000 solid 2px;
+	text-align: center;
+	padding: 20px;
+}
+#modal_cover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	opacity: 0.6;
+}
+#module_instructions {
+	margin-top: 10px;
+	font-family: "Lucida Grande";
+}
+#module_title {
+	position: absolute;
+	top: -68px;
+	left: -108px;
+	font-family: Folk;
+	font-size: 60px;
+	color: purple;
+	text-align: center;
+	-webkit-transform:rotate(-7deg);
+}
+#publisher_camera {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	width: 264px;
+	height: 198px;
+	background: purple;
+}
