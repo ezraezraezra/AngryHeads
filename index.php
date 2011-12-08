@@ -3,8 +3,10 @@
    require_once 'sdk/OpenTokSDK.php';
    
    $a = new OpenTokSDK(API_Config::API_KEY,API_Config::API_SECRET);
-   $token = $a->generate_token();
-   $session = $a->create_session('127.0.0.1')->getSessionId();
+   //$token = $a->generate_token();
+   //$session = $a->create_session('127.0.0.1')->getSessionId();
+   $token = "T1==cGFydG5lcl9pZD03MDU4MDAyJnNka192ZXJzaW9uPXRicGhwLXYwLjkxLjIwMTEtMDMtMDcmc2lnPTE1MGVjNjA2NjgzNzY2MWJkOTNhNTc4MjM1MzVmMzgwYTg0YzdlYjI6c2Vzc2lvbl9pZD0mY3JlYXRlX3RpbWU9MTMyMzM3NDQ5NiZyb2xlPXB1Ymxpc2hlciZub25jZT0xMzIzMzc0NDk2Ljc5ODExNDA3NTUw";
+   $session = "2_MX43MDU4MDAyfjEyNy4wLjAuMX4yMDExLTEyLTA4IDIwOjAxOjM3LjUyMjA2MCswMDowMH4wLjk3MTcyMjQ1NzY3OX4";
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -12,11 +14,14 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<title>Untitled Document</title>
 		<script src="http://staging.tokbox.com/v0.91/js/TB.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="io/dist/socket.io.js"></script>
 		
 		<script type="text/javascript">
 			var apiKey = 7058002;
 			var sessionId = '<?php echo $session; ?>';
 			var token = '<?php echo $token ?>';
+			console.log(sessionId);
+			console.log(token);
 		</script>
 		<script src="js/tb.js" type="text/javascript" charset="UTF-8"></script>
 		<script type="text/javascript" src="js/jquery-1.5.1.min.js" ></script>
@@ -74,8 +79,9 @@
 		<canvas id="game_canvas" width="1152" height="500"></canvas>
 		<div id="container_game">
 			<div id="missle"></div>
+			<div id="container_next_player"></div>
 		</div>
-		
+
 		<div id="modal_cover"></div>
 		<div id="module_camera">
 			<div id="module_title">angryHeads</div>

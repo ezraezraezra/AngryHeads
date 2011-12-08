@@ -18,6 +18,9 @@
 		var session;
 		var publisher;
 		var subscribers = {};
+		var players = new Array();
+		var index_player = 0;
+		var my_streamId = 0;
 
 		// Un-comment either of the following to set automatic logging and exception handling.
 		// See the exceptionHandler() method below.
@@ -132,18 +135,62 @@
 		function addStream(stream) {
 			// Check if this is the stream that I am publishing, and if so do not publish.
 			if (stream.connection.connectionId == session.connection.connectionId) {
+/*
 				// Create missle
 				var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
 				subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
 				document.getElementById("missle").appendChild(subscriberDiv);
+				
+				// Rounded corners
+				setTimeout(function() {
+					console.log(stream.streamId);
+					var curr_id = $("[id^=subscriber_"+ stream.streamId +"]").attr("id");
+					document.getElementById(curr_id).style.borderRadius = '75px';
+				}, 2000);
+				
 				var subscriberProps = {width: 75,
 									   height: 75,
 									   subscribeToAudio: false};
 				subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
-				
+*/				
+				my_streamId = stream.streamId;
 				$("#module_button_close").fadeIn("slow");
-				return;
+				//return;
 			}
+			// Add player to waiting cue
+			var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
+			subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
+			var container = "";
+			
+			if(players.length == 0) {
+				container = "missle";
+			}
+			else {
+				container = "container_next_player";
+			}
+			document.getElementById(container).appendChild(subscriberDiv);
+			
+			var subscriberProps = {width: 75,
+								   height: 75,
+								   subscribeToAudio: false};
+			subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
+			players.push(stream.streamId);
+			
+			// Rounded corners
+			setTimeout(function() {
+				//console.log(stream.streamId);
+				for(var i in players) {
+					console.log(i);
+					var curr_id = $("[id^=subscriber_"+ players[i] +"]").attr("id");
+					//console.log(curr_id);
+					document.getElementById(curr_id).style.borderRadius = '75px';
+					document.getElementById(curr_id).WebkitBorderRadius = '75px';
+					document.getElementById(curr_id).MozBorderRadius = '75px';
+				}
+			}, 1000);
+			
+			
+			
 			// var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
 			// subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
 			// document.getElementById("subscribers").appendChild(subscriberDiv);
@@ -156,4 +203,24 @@
 
 		function hide(id) {
 			document.getElementById(id).style.display = 'none';
+		}
+		
+		function switchVideoFeed() {
+			if(players.length != 1) {
+				var curr_id = $("[id^=subscriber_"+ players[index_player] +"]").attr("id");
+				var curr_player = document.getElementById(curr_id);
+				document.getElementById('container_next_player').appendChild(curr_player);
+				
+				index_player += 1;
+				
+				if(index_player == players.length) {
+					index_player = 0;
+				}
+				curr_id = $("[id^=subscriber_"+ players[index_player] +"]").attr("id");
+				curr_player = document.getElementById(curr_id);
+				//document.getElementById('container_next_player').appendChild(curr_player);
+				$('#' + curr_id).remove();
+				$('#missle').html(curr_player);
+				
+			}
 		}

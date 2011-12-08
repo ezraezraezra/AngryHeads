@@ -149,7 +149,7 @@ body {
 	position: absolute;
 	width: 75px;
 	height: 75px;
-	background-color: #808080;
+	background-color: transparent;
 	top: 325px;
 	left: 120px;
 	cursor:pointer;
@@ -210,4 +210,15 @@ body {
 	width: 264px;
 	height: 198px;
 	background: purple;
+}
+#container_next_player {
+	position: relative;
+	width:  800px;
+	height: 75px;
+	background-color: purple;
+	z-index: 10;
+	top: 525px;
+	margin-left: auto;
+	margin-right: auto;
+	
 }

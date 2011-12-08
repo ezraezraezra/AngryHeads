@@ -28,53 +28,89 @@ $(document).ready(function() {
 		ground_hit[x] = new Audio("assets/node_hit.mp3");
 	}
 	
+	var socket = io.connect('http://localhost:8005');
+			socket.on('start', function (data) {
+				console.log(data);
+			});
+			
+			socket.on('trajectory', function (data) {
+				console.log(data);
+				console.log("Received trajectory from server");
+				if(my_streamId != parseInt(data.data_echo.player_id, 10)) {
+					sling_release.play();
+					gasps_audio.play();
+					sling_pull_counter = 0;
+					
+					trajectory_results = data.data_echo.results;
+					missleStart.y = data.data_echo.start_y;
+					missleStart.x = data.data_echo.start_x;
+					moveMissle(0,0, "left");
+				}
+			});
+	
+	
 	$("#module_button_close").click(function() {
 		$("#module_camera").animate({"top" :  "-500px"}, "slow");
 		$("#modal_cover").fadeOut("slow");
 	});
 	
 	$("#container_game").mousemove(function(mousePosition) {
-		$("#missle").mousedown(function() {
-			isPressed = true;
-			
-		});
-		$("#container_game").mouseup(function() {
-			isPressed = false;
-		});
-		$("#missle").mouseup(function() {
-			launch_missle = true;
-		});
+		//console.log(my_streamId);
+		//console.log(players[index_player]);
+		if(my_streamId == players[index_player]) {
 		
-		if(isPressed === true) {
-			if(mousePosition.pageY > 326 && mousePosition.pageX < 160) {
-				if(sling_pull_counter === 0) {
-					sling_pull.play();
-					sling_pull_counter += 1;
+			$("#missle").mousedown(function() {
+				isPressed = true;
+				
+			});
+			$("#container_game").mouseup(function() {
+				isPressed = false;
+			});
+			$("#missle").mouseup(function() {
+				launch_missle = true;
+			});
+			
+			if(isPressed === true) {
+				if(mousePosition.pageY > 326 && mousePosition.pageX < 160) {
+					if(sling_pull_counter === 0) {
+						sling_pull.play();
+						sling_pull_counter += 1;
+					}
+					$("#missle").css("top", mousePosition.pageY - 37/*125*/);
+					$("#missle").css("left", mousePosition.pageX - 37/*125*/);
+					missleStart.y = mousePosition.pageY - 37/*125*/;
+					missleStart.x = mousePosition.pageX - 37/*125*/;
+					GAME_CANVAS.updateSling(missleStart.x, missleStart.y);
 				}
-				$("#missle").css("top", mousePosition.pageY - 37/*125*/);
-				$("#missle").css("left", mousePosition.pageX - 37/*125*/);
-				missleStart.y = mousePosition.pageY - 37/*125*/;
-				missleStart.x = mousePosition.pageX - 37/*125*/;
-				GAME_CANVAS.updateSling(missleStart.x, missleStart.y);
-			}
-			else {
-				//isPressed = false;
-				launch_missle = false;
+				else {
+					//isPressed = false;
+					launch_missle = false;
+				}
 			}
 		}
 	}).mouseup(function() {
-		if(launch_missle === true && isPressed === true) {
-			launch_missle = false;
-			isPressed = false;
-			
-			sling_release.play();
-			gasps_audio.play();
-			sling_pull_counter = 0;
-			// Launch object
-			trajectory_results = trajectory.calculate(150,363,missleStart.x,missleStart.y);
-			
-			moveMissle(0,0, "left");
-			
+		if(my_streamId == players[index_player]) {
+			if(launch_missle === true && isPressed === true) {
+				launch_missle = false;
+				isPressed = false;
+				
+				sling_release.play();
+				gasps_audio.play();
+				sling_pull_counter = 0;
+				// Launch object
+				trajectory_results = trajectory.calculate(150,363,missleStart.x,missleStart.y);
+				
+				// TODO Tell everyone else to move the object on screen
+				socket.emit('player_move', {
+						results: trajectory_results,
+						start_x : missleStart.x,
+						start_y : missleStart.y,
+						player_id : my_streamId
+						});
+				
+				moveMissle(0,0, "left");
+				
+			}
 		}
 	});
 	
@@ -105,7 +141,7 @@ $(document).ready(function() {
 		if(numberX < trajectory_results.length - 1) {
 			// If I can still move left
 			if( (((missleStart.y - trajectory_results[numberX]) + 75) < 500)  && (numberX + missleStart.x + 75 < $("#container_game").width() )) {
-				numberX += 4;
+				numberX += 5;//4;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX,numberY, "left");}, 0.3);
 			}
@@ -139,7 +175,7 @@ $(document).ready(function() {
 			}
 			// If else I can still move down
 			else if ( (missleStart.y - trajectory_results[numberX] + numberY + 75 < 500) ) {
-				numberY += 2;
+				numberY += 3;//2;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX, numberY, "down");}, 0.3);
 			}
@@ -159,6 +195,11 @@ $(document).ready(function() {
 	
 	function resetSling() {
 		$("#missle").css({top : 325, left: 120});
+		
+		// TODO Change player on slingshot
+		switchVideoFeed();
+		
+		
 		GAME_CANVAS.updateScore();
 	}
 });

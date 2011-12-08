@@ -9,11 +9,12 @@
  *              mashed with the game mechanics of Angry Birds
  *
  * Tech:        AJAX, CSS, CSS3, HTML, HTML5, JavaScript, jQuery, 
- *              OpenTok API, PHP
- * Last Update: November 17th, 2011
+ *              Node.js, OpenTok API, PHP, Socket.io
+ * Last Update: December 8th, 2011
  ***********************************************************************/
  
  NOTE: *** 3rd PARTY LIBRARIES HAVE BEEN OMITTED FROM THE PUBLIC REPO ***
  
  Libraries Omitted:  OpenTok     http://www.tokbox.com
                      jQuery      http://jquery.com
+                     Socket.io   http://socket.io
