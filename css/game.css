@@ -11,10 +11,17 @@
  * 
  */
 @font-face {
-	font-family: Folk; src: url('../assets/Folksolid-webfont.ttf');
+	font-family: Folk; src: url('../assets/PermanentMarker.ttf');
 }
 body {
-	background-color: #121212;
+	background-color: #572F13;
+	/*
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.21, #572F13),
+		color-stop(0.41, #736E1E) );*/
 }
 #canvas_background {
 	width: 1152px;
@@ -158,15 +165,18 @@ body {
 #module_button_close {
 	position: relative;
 	width: 150px;
-	height: 25px;
+	height: 30px;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: blue;
-	margin-top: 10px;
+	background-color: #F2C432;
+	margin-top: 7px;
 	font-family: Folk;
 	font-size: 24px;
 	cursor:pointer;
 	display:none;
+	line-height: 24px;
+	border-radius: 10px;
+	box-shadow: 0px 0px 2px #000000;
 }
 #module_camera {
 	position: absolute;
@@ -175,10 +185,13 @@ body {
 	left: 37%;
 	width: 270px;
 	height: 275px;
-	background-color: red;
-	border:#000000 solid 2px;
+	background-color: #97AF22;
+	border-radius: 20px;
+	box-shadow: 0px 0px 10px #000000;
+	/*border:#000000 solid 2px;*/
 	text-align: center;
 	padding: 20px;
+	border-radius: 10px;
 }
 #modal_cover {
 	position: absolute;
@@ -199,7 +212,7 @@ body {
 	left: -108px;
 	font-family: Folk;
 	font-size: 60px;
-	color: purple;
+	color: #F2C432;
 	text-align: center;
 	-webkit-transform:rotate(-7deg);
 }
@@ -215,10 +228,52 @@ body {
 	position: relative;
 	width:  800px;
 	height: 75px;
-	background-color: purple;
+	background-color: #F2C432;
 	z-index: 10;
-	top: 525px;
+	top: 540px;
 	margin-left: auto;
 	margin-right: auto;
-	
+	border-radius: 75px;
+}
+#next_player_title {
+	height: 75px;
+	position: relative;
+	float: left;
+	width: 300px;
+	background-color: transparent;
+	font-family: Folk;
+	font-size: 36px;
+	line-height: 70px;
+	text-align: center;
+}
+#next_player_holder {
+	position: relative;
+	float:left;
+	width: 500px;
+	text-align: center;
+	height: 75px;
+}
+#main_title {
+	position: absolute;
+	top: -15px;
+	left: 15px;
+	font-family: Folk;
+	font-size: 60px;
+	color: #F2C432;
+	display: none;
+	z-index: 100;
+}
+#player_status {
+	position: relative;
+	width: 800px;
+	height: 45px;
+	margin-left: auto;
+	margin-right: auto;
+	z-index: 10;
+	top: 525px;
+	font-family: Folk;
+	font-size: 36px;
+	line-height: 55px;
+	text-align: center;
+	color: #97AF22;
 }

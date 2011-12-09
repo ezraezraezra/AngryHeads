@@ -12,7 +12,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>Untitled Document</title>
+		<title>AngryHeads - powered by OpenTok</title>
 		<script src="http://staging.tokbox.com/v0.91/js/TB.min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" src="io/dist/socket.io.js"></script>
 		
@@ -79,16 +79,20 @@
 		<canvas id="game_canvas" width="1152" height="500"></canvas>
 		<div id="container_game">
 			<div id="missle"></div>
-			<div id="container_next_player"></div>
+			<div id="player_status"></div>
+			<div id="container_next_player">
+				<div id="next_player_title">Player Queue</div>
+				<div id="nex_player_holder"></div>
+			</div>
+			<div id="main_title">AngryHeads</div>
 		</div>
 
 		<div id="modal_cover"></div>
 		<div id="module_camera">
 			<div id="module_title">angryHeads</div>
 			<div id="publisher_camera"></div>
-			<div id="module_instructions">Once you're camera is on, click button bellow</div>
+			<div id="module_instructions">Once you're camera is on, click button below</div>
 			<div id="module_button_close">lets play</div>
 		</div>
-		
 	</body>
 </html>

@@ -22,6 +22,8 @@ $(document).ready(function() {
 	var gasps_audio = new Audio("assets/gasps6.mp3");
 	var sling_pull = new Audio("assets/sling_pull.mp3");
 	var sling_release = new Audio("assets/sling_release.mp3");
+	var background_music = new Audio("assets/house_made-mike_vekris.mp3");
+	
 	var sling_pull_counter = 0;
 	var ground_hit = new Array();
 	for(var x = 0; x < 6; x++) {
@@ -39,7 +41,10 @@ $(document).ready(function() {
 				if(my_streamId != parseInt(data.data_echo.player_id, 10)) {
 					sling_release.play();
 					gasps_audio.play();
-					sling_pull_counter = 0;
+					sling_pull_counter += 1;
+					
+					// TODO FIX BOUNCE ISSUE
+					// instead of sending results, send digits to make client figure it out
 					
 					trajectory_results = data.data_echo.results;
 					missleStart.y = data.data_echo.start_y;
@@ -48,10 +53,23 @@ $(document).ready(function() {
 				}
 			});
 	
+	background_music.addEventListener('ended', function() {
+		this.currentTime = 0;
+		this.play();
+	}, false);
+	
+	setTimeout(function() {
+		console.log("start music");
+		background_music.play();
+		background_music.volume = .5;
+	}, 2000);
+	
+	
 	
 	$("#module_button_close").click(function() {
 		$("#module_camera").animate({"top" :  "-500px"}, "slow");
 		$("#modal_cover").fadeOut("slow");
+		$("#main_title").fadeIn("slow");
 	});
 	
 	$("#container_game").mousemove(function(mousePosition) {

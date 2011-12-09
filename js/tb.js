@@ -161,14 +161,17 @@
 			var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
 			subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
 			var container = "";
-			
+			var current_status = "";
 			if(players.length == 0) {
 				container = "missle";
+				//current_status = "it's your turn";
 			}
 			else {
-				container = "container_next_player";
+				container = "nex_player_holder";
+				//current_status = "someone else's turn";
 			}
 			document.getElementById(container).appendChild(subscriberDiv);
+			//$("#player_status").html(current_status);
 			
 			var subscriberProps = {width: 75,
 								   height: 75,
@@ -209,7 +212,7 @@
 			if(players.length != 1) {
 				var curr_id = $("[id^=subscriber_"+ players[index_player] +"]").attr("id");
 				var curr_player = document.getElementById(curr_id);
-				document.getElementById('container_next_player').appendChild(curr_player);
+				document.getElementById('nex_player_holder').appendChild(curr_player);
 				
 				index_player += 1;
 				
@@ -218,6 +221,14 @@
 				}
 				curr_id = $("[id^=subscriber_"+ players[index_player] +"]").attr("id");
 				curr_player = document.getElementById(curr_id);
+				var current_status;
+				if(parseInt(players[index_player],10) == my_streamId) {
+					current_status = "it's your turn";
+				}
+				else {
+					current_status = "other player's turn";
+				}
+				$("#player_status").html(current_status);
 				//document.getElementById('container_next_player').appendChild(curr_player);
 				$('#' + curr_id).remove();
 				$('#missle').html(curr_player);
