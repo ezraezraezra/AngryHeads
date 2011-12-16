@@ -20,17 +20,25 @@ var GAME_CANVAS = function() {
 	var tries = 0;
 	var level = 1;
 	var level_completed = new Audio("assets/charge1a.mp3");
+	var allEnemies;
 	
 	$(document).ready(function() {
 		c = document.getElementById('game_canvas');
 		cxt = c.getContext("2d");
 		draw();
 		
-		for(var x = 0; x < 5; x++) {
-			enemies[x] = new ENEMY(randomGenerator(400, 1000), randomGenerator(100,450), "rgba(192,202,85,1)", 0);
+		// for(var x = 0; x < 5; x++) {
+			// enemies[x] = new ENEMY(randomGenerator(400, 1000), randomGenerator(100,450), "rgba(192,202,85,1)", 0);
+		// }
+		//drawEnemy();
+	});
+	
+	function loadEnemy() {
+		for(var x = 0; x < allEnemies[level - 1].amount; x++) {
+			enemies[x] = new ENEMY(allEnemies[level - 1].x_pos[x], allEnemies[level - 1].y_pos[x], "rgba(192,202,85,1)", 0);
 		}
 		drawEnemy();
-	});
+	}
 	
 	// Function from: http://www.admixweb.com/2010/08/24/javascript-tip-get-a-random-number-between-two-integers/
 	function randomGenerator(from, to) {
@@ -212,6 +220,7 @@ var GAME_CANVAS = function() {
 					sound_counter += 1;
 				}
 			},
+			// TODO reset via server
 			reset : function() {
 				x = randomGenerator(400, 1000);
 				y = randomGenerator(100,450);
@@ -271,6 +280,7 @@ var GAME_CANVAS = function() {
 				level +=1;
 				tries = 0;
 				level_completed.play();
+				loadEnemy();
 			}
 			
 			drawSlingShot();
@@ -283,6 +293,15 @@ var GAME_CANVAS = function() {
 			for(var x = 0; x < enemies.length; x++) {
 				enemies[x].updateMouth(isOpen);
 			}
+		},
+		constructEnemy : function(data) {
+			allEnemies = data.level_stats;
+			console.log(allEnemies);
+			loadEnemy();
+		},
+		updateLevel : function() {
+			level += 1;
+			loadEnemy();
 		}
 	};
 }();

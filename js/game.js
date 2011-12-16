@@ -10,6 +10,8 @@
  * Date:        November 2011
  * 
  */
+var socket;
+
 $(document).ready(function() {
 	var isPressed = false;
 	var BOUNCES_ALLOWED = 0;
@@ -23,16 +25,19 @@ $(document).ready(function() {
 	var sling_pull = new Audio("assets/sling_pull.mp3");
 	var sling_release = new Audio("assets/sling_release.mp3");
 	var background_music = new Audio("assets/house_made-mike_vekris.mp3");
+	//http://subs.freesoundtrackmusic.com/freemusic?TRACKLISTINGGET|NEWEST|THEMES|BLANK|0|TRACKLISTING|KEYWORD|whimsical|NOT%20USED|NOT%20USED|NOT%20USED
 	
 	var sling_pull_counter = 0;
 	var ground_hit = new Array();
+	
 	for(var x = 0; x < 6; x++) {
 		ground_hit[x] = new Audio("assets/node_hit.mp3");
 	}
 	
-	var socket = io.connect('http://localhost:8005');
+	socket = io.connect('http://localhost:8005');
 			socket.on('start', function (data) {
 				console.log(data);
+				GAME_CANVAS.constructEnemy(data);
 			});
 			
 			socket.on('trajectory', function (data) {
@@ -45,10 +50,11 @@ $(document).ready(function() {
 					
 					// TODO FIX BOUNCE ISSUE
 					// instead of sending results, send digits to make client figure it out
+					//trajectory_results = data.data_echo.results;
 					
-					trajectory_results = data.data_echo.results;
 					missleStart.y = data.data_echo.start_y;
 					missleStart.x = data.data_echo.start_x;
+					trajectory_results = trajectory.calculate(data.data_echo.sling_x, data.data_echo.sling_y, missleStart.x, missleStart.y);
 					moveMissle(0,0, "left");
 				}
 			});
@@ -120,7 +126,9 @@ $(document).ready(function() {
 				
 				// TODO Tell everyone else to move the object on screen
 				socket.emit('player_move', {
-						results: trajectory_results,
+						//results: trajectory_results,
+						sling_x : 150,
+						sling_y : 363,
 						start_x : missleStart.x,
 						start_y : missleStart.y,
 						player_id : my_streamId
@@ -220,4 +228,12 @@ $(document).ready(function() {
 		
 		GAME_CANVAS.updateScore();
 	}
+});
+
+$(window).bind('beforeunload', function() {
+	//alert("AHHA");
+	socket.emit('player_remove', {
+		action : 'remove'
+	});
+			
 });

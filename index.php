@@ -5,8 +5,8 @@
    $a = new OpenTokSDK(API_Config::API_KEY,API_Config::API_SECRET);
    //$token = $a->generate_token();
    //$session = $a->create_session('127.0.0.1')->getSessionId();
-   $token = "T1==cGFydG5lcl9pZD03MDU4MDAyJnNka192ZXJzaW9uPXRicGhwLXYwLjkxLjIwMTEtMDMtMDcmc2lnPTE1MGVjNjA2NjgzNzY2MWJkOTNhNTc4MjM1MzVmMzgwYTg0YzdlYjI6c2Vzc2lvbl9pZD0mY3JlYXRlX3RpbWU9MTMyMzM3NDQ5NiZyb2xlPXB1Ymxpc2hlciZub25jZT0xMzIzMzc0NDk2Ljc5ODExNDA3NTUw";
    $session = "2_MX43MDU4MDAyfjEyNy4wLjAuMX4yMDExLTEyLTA4IDIwOjAxOjM3LjUyMjA2MCswMDowMH4wLjk3MTcyMjQ1NzY3OX4";
+   $token = $a->generate_token($session);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -49,7 +49,7 @@
 		-->
 		<div id="canvas_background">
 			<div id="sky">
-				<div id="cloud_1">
+<!-- 				<div id="cloud_1">
 					<div class="ele1 ele"></div>
 					<div class="ele2 ele"></div>
 					<div class="ele3 ele"></div>
@@ -72,7 +72,7 @@
 					<div class="ele2 ele"></div>
 					<div class="ele3 ele"></div>
 					<div class="ele4 ele"></div>
-				</div>
+				</div> -->
 			</div>
 			<div id="land"></div>
 		</div>

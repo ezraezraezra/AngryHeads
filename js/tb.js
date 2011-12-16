@@ -103,6 +103,19 @@
 		function streamDestroyedHandler(event) {
 			// This signals that a stream was destroyed. Any Subscribers will automatically be removed.
 			// This default behaviour can be prevented using event.preventDefault()
+			console.log("a stream was destroyed");
+			console.log(event);
+			for(var x = 0; x < players.length; x++) {
+				for(var y = 0; y < event.streams.length; y++) {
+					if(players[x].toString().indexOf(event.streams[y].streamId.toString()) != -1 ) {
+						temp_index = x;
+					}
+				}
+				
+				players.splice(x - 1 ,1);
+				console.log("This is the updated array");
+				console.log(players);		
+			}
 		}
 
 		function sessionDisconnectedHandler(event) {
@@ -154,6 +167,11 @@
 				subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
 */				
 				my_streamId = stream.streamId;
+				// TODO tell server of my ability to play
+				// socket.emit('player_id', {
+						// player_id : my_streamId
+				// });
+				
 				$("#module_button_close").fadeIn("slow");
 				//return;
 			}
