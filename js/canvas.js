@@ -34,8 +34,10 @@ var GAME_CANVAS = function() {
 	});
 	
 	function loadEnemy() {
+		// TODO Fix this error "Cannot read property 'amount' of undefined"
 		for(var x = 0; x < allEnemies[level - 1].amount; x++) {
-			enemies[x] = new ENEMY(allEnemies[level - 1].x_pos[x], allEnemies[level - 1].y_pos[x], "rgba(192,202,85,1)", 0);
+			//enemies[x] = new ENEMY(allEnemies[level - 1].x_pos[x], allEnemies[level - 1].y_pos[x], "rgba(192,202,85,1)", allEnemies[level - 1].status[x]);
+			enemies[x] = new ENEMY(allEnemies[level - 1].x_pos[x], allEnemies[level - 1].y_pos[x], "rgba(192,202,85,1)", 0, allEnemies[level - 1].status[x]);
 		}
 		drawEnemy();
 	}
@@ -176,11 +178,11 @@ var GAME_CANVAS = function() {
 		cxt.fillText("Level: "+level, 950, 70);
 	}
 	
-	var ENEMY = function(_x,_y,_color, _mouth) {
+	var ENEMY = function(_x,_y,_color, _mouth, _state) {
 		var x = _x;
 		var y = _y;
 		var color = _color;
-		var state = 1;
+		var state = _state;//1;
 		var mouth = _mouth;
 		var pop = new Audio("assets/softcork.mp3");
 		var sound_counter = 0;
@@ -295,13 +297,32 @@ var GAME_CANVAS = function() {
 			}
 		},
 		constructEnemy : function(data) {
+			level = data.current_level;
+			tries = data.current_tries;
+			cxt.clearRect(0,0,1152,500);
+			drawSlingShot();
+			drawStaticSling();
+			drawScore();
 			allEnemies = data.level_stats;
-			console.log(allEnemies);
+			//console.log(allEnemies);
 			loadEnemy();
 		},
 		updateLevel : function() {
 			level += 1;
 			loadEnemy();
+		},
+		getLevel : function() {
+			return level;
+		},
+		getTries : function() {
+			return tries + 1;
+		},
+		getStatus : function() {
+			var temp_status = new Array();
+			for(var x = 0; x < enemies.length; x++) {
+				temp_status.push(enemies[x].getState());
+			}
+			return temp_status;
 		}
 	};
 }();

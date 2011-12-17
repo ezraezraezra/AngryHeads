@@ -59,16 +59,16 @@ $(document).ready(function() {
 				}
 			});
 	
-	background_music.addEventListener('ended', function() {
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	
-	setTimeout(function() {
-		console.log("start music");
-		background_music.play();
-		background_music.volume = .5;
-	}, 2000);
+	// background_music.addEventListener('ended', function() {
+		// this.currentTime = 0;
+		// this.play();
+	// }, false);
+// 	
+	// setTimeout(function() {
+		// console.log("start music");
+		// background_music.play();
+		// background_music.volume = .5;
+	// }, 2000);
 	
 	
 	
@@ -210,6 +210,22 @@ $(document).ready(function() {
 				ground_hit[0].play();
 				$("#missle").css("top", 425);
 				GAME_CANVAS.updateEnemyMouth(0);
+				// TODO
+				// GET level, tries, enemy status
+				// SEND to server for update
+				var temp_level = GAME_CANVAS.getLevel();
+				var temp_tries = GAME_CANVAS.getTries();
+				var temp_status = GAME_CANVAS.getStatus();
+				console.log("Level: "+ temp_level + ", Tries: "+temp_tries);
+				console.log(temp_status);
+				socket.emit('enemy_status', {
+					//results: trajectory_results,
+					level : temp_level,
+					tries : temp_tries,
+					status : temp_status
+				});
+				
+				
 				clearTimeout(t);
 				var t = setTimeout(function() {resetSling();}, 1500);
 			}
