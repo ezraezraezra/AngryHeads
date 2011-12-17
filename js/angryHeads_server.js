@@ -49,7 +49,7 @@ function randomGenerator(from, to) {
 
 function generateLevel() {
 	if(player_count === 0) {
-		for(var _x = 0; _x < 1; _x++) {
+		for(var _x = 0; _x < 5; _x++) {
 			var temp_amount = _x + 4;
 			var enemy_x = new Array();
 			var enemy_y = new Array();

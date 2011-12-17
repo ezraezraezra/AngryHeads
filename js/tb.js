@@ -105,16 +105,28 @@
 			// This default behaviour can be prevented using event.preventDefault()
 			console.log("a stream was destroyed");
 			console.log(event);
+			var temp_index;
 			for(var x = 0; x < players.length; x++) {
 				for(var y = 0; y < event.streams.length; y++) {
 					if(players[x].toString().indexOf(event.streams[y].streamId.toString()) != -1 ) {
 						temp_index = x;
+						var temp_id = event.streams[y].streamId.toString();
+						
+						console.log("comparing in streamDestroyed");
+						if(temp_id.indexOf(players[index_player]) != -1 ) {
+							console.log("About to do switchVideoFeed");
+							switchVideoFeed();
+						}
+						//players.splice(temp_index - 1 ,1);
+						players.splice(temp_index,1);
+						console.log("This is the updated array");
+						console.log(players);
 					}
 				}
 				
-				players.splice(x - 1 ,1);
-				console.log("This is the updated array");
-				console.log(players);		
+				// players.splice(temp_index - 1 ,1);
+				// console.log("This is the updated array");
+				// console.log(players);
 			}
 		}
 

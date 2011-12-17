@@ -279,10 +279,11 @@ var GAME_CANVAS = function() {
 				for(var x = 0; x < enemies.length; x++) {
 					enemies[x].reset();
 				}
-				level +=1;
+//				level +=1;
 				tries = 0;
 				level_completed.play();
 				loadEnemy();
+				level +=1;
 			}
 			
 			drawSlingShot();
