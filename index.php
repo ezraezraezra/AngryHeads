@@ -3,8 +3,6 @@
    require_once 'sdk/OpenTokSDK.php';
    
    $a = new OpenTokSDK(API_Config::API_KEY,API_Config::API_SECRET);
-   //$token = $a->generate_token();
-   //$session = $a->create_session('127.0.0.1')->getSessionId();
    $session = "2_MX43MDU4MDAyfjEyNy4wLjAuMX4yMDExLTEyLTA4IDIwOjAxOjM3LjUyMjA2MCswMDowMH4wLjk3MTcyMjQ1NzY3OX4";
    $token = $a->generate_token($session);
 ?>
@@ -20,8 +18,6 @@
 			var apiKey = 7058002;
 			var sessionId = '<?php echo $session; ?>';
 			var token = '<?php echo $token ?>';
-			console.log(sessionId);
-			console.log(token);
 		</script>
 		<script src="js/tb.js" type="text/javascript" charset="UTF-8"></script>
 		<script type="text/javascript" src="js/jquery-1.5.1.min.js" ></script>

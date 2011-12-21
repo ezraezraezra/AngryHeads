@@ -92,6 +92,8 @@ io.sockets.on('connection', function (socket) {
 		if(player_count === 0) {
 			current_level = 1;
 			current_tries = 0;
+			enemyLevels = new Array();
+			player_count = 0;
 		}
 	});
 	
