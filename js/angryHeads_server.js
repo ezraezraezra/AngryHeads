@@ -9,6 +9,9 @@ var current_level = 1;
 var current_tries = 0;
 var enemyLevels = new Array();
 
+var players = new Array();
+var current_player_index = 0;
+
 var elevel = function(_level, _x, _y, _amount, _status) {
 	var level = _level;
 	var x_pos = _x;
@@ -77,7 +80,7 @@ io.sockets.on('connection', function (socket) {
 //	console.log(enemyLevels[current_level - 1].status[0]);
 	
 	
-	socket.emit('start', {message: "200: Player connected", level_stats: stats, current_level : current_level, current_tries : current_tries});
+	socket.emit('start', {message: "200: Player connected", level_stats: stats, current_level : current_level, current_tries : current_tries, player_count : player_count, current_player_index : current_player_index, players : players});
 	
 	socket.on('player_move', function(data) {
 		console.log("MOVE RECEIVED: "+ data);
@@ -86,7 +89,7 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.emit('trajectory', { data_echo: data});
 	});
 	
-	socket.on('player_remove', function() {
+	socket.on('player_remove', function(data) {
 		console.log("REMOVE PLAYER");
 		player_count -= 1;
 		if(player_count === 0) {
@@ -94,6 +97,16 @@ io.sockets.on('connection', function (socket) {
 			current_tries = 0;
 			enemyLevels = new Array();
 			player_count = 0;
+		}
+		else {
+			for(var x = 0; x < players.length; x++) {
+				if(players[x].toString().indexOf(data.player_id.toString()) != -1) {
+					players.splice(x,1);
+				}
+			}
+			console.log("player removed from array");
+			socket.emit('new_player', { new_player : players});
+			socket.broadcast.emit('new_player', { new_player: players});
 		}
 	});
 	
@@ -115,5 +128,21 @@ io.sockets.on('connection', function (socket) {
 		for(var x = 0; x < data.status.length; x++) {
 			enemyLevels[current_level - 1].status[x] = data.status[x];
 		}
-	});	
+	});
+	
+	socket.on('player_id', function(data) {
+		// TODO
+		// Server keep track of who is playing & who's turn
+		// Currently being kept on client, move to here
+		players.push(data.player_id);
+		console.log('player added to array');
+		socket.emit('new_player', { new_player : players});
+		socket.broadcast.emit('new_player', { new_player: players});
+	});
+	
+	socket.on('plaer_next', function(data) {
+		current_player = data.index_player;
+		console.log("Current player index: "+current_player);
+	});
+	
 });

@@ -21,6 +21,9 @@
 		var players = new Array();
 		var index_player = 0;
 		var my_streamId = 0;
+		var first_connect = true;
+		
+		var current_status = "";
 
 		// Un-comment either of the following to set automatic logging and exception handling.
 		// See the exceptionHandler() method below.
@@ -106,28 +109,46 @@
 			console.log("a stream was destroyed");
 			console.log(event);
 			var temp_index;
-			for(var x = 0; x < players.length; x++) {
-				for(var y = 0; y < event.streams.length; y++) {
-					if(players[x].toString().indexOf(event.streams[y].streamId.toString()) != -1 ) {
-						temp_index = x;
-						var temp_id = event.streams[y].streamId.toString();
-						
-						console.log("comparing in streamDestroyed");
-						if(temp_id.indexOf(players[index_player]) != -1 ) {
-							console.log("About to do switchVideoFeed");
-							switchVideoFeed();
-						}
-						//players.splice(temp_index - 1 ,1);
-						players.splice(temp_index,1);
-						console.log("This is the updated array");
-						console.log(players);
-					}
-				}
-				
-				// players.splice(temp_index - 1 ,1);
-				// console.log("This is the updated array");
-				// console.log(players);
+			
+			
+			if($("#missle").has('object')) {
+				console.log("streamDestroyedHandler about to do swtichVideoFeed");
+				switchVideoFeed();
 			}
+			
+			// for(var x = 0; x < players.length; x++) {
+				// for(var y = 0; y < event.streams.length; y++) {
+					// console.log("comparing: players[x].toString: "+players[x].toString());
+					// console.log("to: event.streams[y].streamId.toString(): "+ event.streams[y].streamId.toString());
+					// if(players[x].toString().indexOf(event.streams[y].streamId.toString()) != -1 ) {
+						// temp_index = x;
+						// var temp_id = event.streams[y].streamId.toString();
+// 						
+						// if(temp_id.indexOf(players[index_player].toString()) != -1) {
+							// console.log("About to do switchVideoFeed");
+							// switchVideoFeed();
+						// }
+// 						
+						// // console.log("comparing in streamDestroyed");
+						// // if(temp_id.indexOf(players[index_player]) != -1 ) {
+							// // console.log("About to do switchVideoFeed");
+							// // switchVideoFeed();
+						// // }
+// 						
+// 						
+						// //players.splice(temp_index - 1 ,1);
+						// players.splice(temp_index,1);
+						// console.log("This is the updated array");
+						// console.log(players);
+// 						
+// 						
+					// }
+				// }
+// 				
+				// // players.splice(temp_index - 1 ,1);
+				// // console.log("This is the updated array");
+				// // console.log(players);
+			// }
 		}
 
 		function sessionDisconnectedHandler(event) {
@@ -180,47 +201,127 @@
 */				
 				my_streamId = stream.streamId;
 				// TODO tell server of my ability to play
-				// socket.emit('player_id', {
-						// player_id : my_streamId
-				// });
+				socket.emit('player_id', {
+						player_id : my_streamId
+				});
 				
 				$("#module_button_close").fadeIn("slow");
 				//return;
 			}
+			
+//			setTimeout(function() { addStreamVideo(stream); }, 1000);
+		
+//		}
+		
+		
+//		function addStreamVideo(stream) {
+			console.log("addStreamVideo");	
 			// Add player to waiting cue
 			var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
 			subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
 			var container = "";
-			var current_status = "";
-			if(players.length == 0) {
-				container = "missle";
-				//current_status = "it's your turn";
-			}
-			else {
-				container = "nex_player_holder";
-				//current_status = "someone else's turn";
-			}
-			document.getElementById(container).appendChild(subscriberDiv);
-			//$("#player_status").html(current_status);
+			//var current_status = "";
+			// console.log("Current index_player:" + index_player);
+			// console.log("Current streamId: "+ players[index_player]);
+			// console.log("current streamId: "+ players[0]);
+			// console.log("all players:");
+			// console.log(players);
+			// console.log("the steamId: "+ stream.streamId);
 			
-			var subscriberProps = {width: 75,
-								   height: 75,
-								   subscribeToAudio: false};
-			subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
-			players.push(stream.streamId);
 			
-			// Rounded corners
-			setTimeout(function() {
-				//console.log(stream.streamId);
-				for(var i in players) {
-					console.log(i);
-					var curr_id = $("[id^=subscriber_"+ players[i] +"]").attr("id");
-					//console.log(curr_id);
-					document.getElementById(curr_id).style.borderRadius = '75px';
-					document.getElementById(curr_id).WebkitBorderRadius = '75px';
-					document.getElementById(curr_id).MozBorderRadius = '75px';
-				}
-			}, 1000);
+//			if(first_connect === true) {
+//				first_connect = false;
+				
+//				setTimeout(function() {
+					console.log("This is players length: "+ players.length);
+					console.log("inside timeout, comparing index_player: "+ index_player);
+					console.log("inside timeout, comparing players[index]: "+ players[index_player]);
+					console.log("inside timeout, comparing stream.streamId: "+ stream.streamId);
+					if(/*players.length == 1 /*player_count == 1*/ ((players.length === 0) && player_count == 1) || (players[index_player] == stream.streamId)) {
+						console.log("players[index_player] == stream.streamId");
+					container = "missle";
+					player_count += 1;
+					//current_status = "it's your turn";
+						if(stream.streamId == my_streamId) {
+							current_status = "it's your turn";
+						}
+						else {
+							current_status = "someone else's turn";
+						}
+					}
+					else {
+						container = "nex_player_holder";
+						//player_count += 1;
+						//current_status = "someone else's turn";
+					}
+					document.getElementById(container).appendChild(subscriberDiv);
+					
+					$("#player_status").html(current_status);
+					
+					var subscriberProps = {width: 75,
+										   height: 75,
+										   subscribeToAudio: false};
+					subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
+					
+					for(var i in players) {
+						console.log(i);
+						var curr_id = $("[id^=subscriber_"+ players[i] +"]").attr("id");
+						//console.log(curr_id);
+						document.getElementById(curr_id).style.borderRadius = '75px';
+						document.getElementById(curr_id).WebkitBorderRadius = '75px';
+						document.getElementById(curr_id).MozBorderRadius = '75px';
+					}
+					
+//				}, 4000);
+//			}
+//			else {
+				// console.log("outside timeout, comparing index_player: "+ index_player);
+					// console.log("outisde timeout, comparing players[index]: "+ players[index_player]);
+					// console.log("outisde timeout, comparing stream.streamId: "+ stream.streamId);
+// 			
+				// if(/*players.length == 0*/ /*player_count == 1*/ players[index_player] == stream.streamId) {
+					// container = "missle";
+					// player_count += 1;
+					// //current_status = "it's your turn";
+					// if(stream.streamId == parseInt(my_streamId, 10)) {
+						// current_status = "it's your turn";
+					// }
+					// else {
+						// current_status = "someone else's turn";
+					// }
+				// }
+				// else {
+					// container = "nex_player_holder";
+					// //current_status = "someone else's turn";
+				// }
+				// document.getElementById(container).appendChild(subscriberDiv);
+				// $("#player_status").html(current_status);
+// 				
+				// var subscriberProps = {width: 75,
+									   // height: 75,
+									   // subscribeToAudio: false};
+				// subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
+// 				
+				// /*
+				 // * 
+				 // * players.push(stream.streamId);
+				 // * 
+				 // */
+// 				
+// 				
+				// Rounded corners
+				setTimeout(function() {
+					//console.log(stream.streamId);
+					for(var i in players) {
+						console.log(i);
+						var curr_id = $("[id^=subscriber_"+ players[i] +"]").attr("id");
+						//console.log(curr_id);
+						document.getElementById(curr_id).style.borderRadius = '75px';
+						document.getElementById(curr_id).WebkitBorderRadius = '75px';
+						document.getElementById(curr_id).MozBorderRadius = '75px';
+					}
+				}, 1000);
+			// }
 			
 			
 			
@@ -239,7 +340,9 @@
 		}
 		
 		function switchVideoFeed() {
-			if(players.length != 1) {
+			//if(players.length != 1) {
+				var temp_id = index_player;
+				
 				var curr_id = $("[id^=subscriber_"+ players[index_player] +"]").attr("id");
 				var curr_player = document.getElementById(curr_id);
 				document.getElementById('nex_player_holder').appendChild(curr_player);
@@ -263,5 +366,11 @@
 				$('#' + curr_id).remove();
 				$('#missle').html(curr_player);
 				
-			}
+				if(my_streamId == players[temp_id]) {
+					socket.emit('player_next', {
+						index_player : index_player
+					});
+				}
+				
+			//}
 		}

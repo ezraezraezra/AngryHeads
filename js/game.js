@@ -12,6 +12,7 @@
  */
 var socket;
 var background_music = new Audio("assets/house_made-mike_vekris.mp3");
+var player_count;
 
 $(document).ready(function() {
 	var isPressed = false;
@@ -37,6 +38,12 @@ $(document).ready(function() {
 	
 	socket = io.connect('http://localhost:8005');
 			socket.on('start', function (data) {
+				player_count = parseInt(data.player_count, 10);
+				index_player = parseInt(data.current_player_index, 10);
+				
+				players = data.players;
+				
+				console.log("Current player index: "+ index_player);
 				console.log(data);
 				GAME_CANVAS.constructEnemy(data);
 			});
@@ -55,17 +62,22 @@ $(document).ready(function() {
 					moveMissle(0,0, "left");
 				}
 			});
+			
+			socket.on('new_player', function (data) {
+				players = data.new_player;
+				console.log(players);
+			});
 	
-	background_music.addEventListener('ended', function() {
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	
-	setTimeout(function() {
-		console.log("start music");
-		background_music.play();
-		background_music.volume = .5;
-	}, 2000);
+	// background_music.addEventListener('ended', function() {
+		// this.currentTime = 0;
+		// this.play();
+	// }, false);
+// 	
+	// setTimeout(function() {
+		// console.log("start music");
+		// background_music.play();
+		// background_music.volume = .5;
+	// }, 2000);
 	
 	
 	
@@ -245,7 +257,8 @@ $(document).ready(function() {
 
 $(window).bind('beforeunload', function() {
 	socket.emit('player_remove', {
-		action : 'remove'
+		action : 'remove',
+		player_id : my_streamId
 	});
 			
 });
