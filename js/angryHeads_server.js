@@ -91,17 +91,21 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.on('player_remove', function(data) {
 		console.log("REMOVE PLAYER");
+		console.log("Removing player: "+ data.player_id);
 		player_count -= 1;
 		if(player_count === 0) {
+			console.log("DEEP CLEAN");
 			current_level = 1;
 			current_tries = 0;
 			enemyLevels = new Array();
 			player_count = 0;
+			players = new Array();
 		}
 		else {
 			for(var x = 0; x < players.length; x++) {
 				if(players[x].toString().indexOf(data.player_id.toString()) != -1) {
 					players.splice(x,1);
+					console.log("In if statment, removing from players array");
 				}
 			}
 			console.log("player removed from array");
