@@ -117,7 +117,7 @@ var trajectory = function(){
 		},
 		recalculate : function() {
 			SIDEC = SIDEC/2;
-			console.log(SIDEC);
+			//console.log(SIDEC);
 			return calculateTrajectory(THETA, SIDEC);
 		}
 	};

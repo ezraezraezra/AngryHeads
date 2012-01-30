@@ -277,3 +277,27 @@ body {
 	text-align: center;
 	color: #97AF22;
 }
+#volume {
+	position: absolute;
+	background-color: transparent;
+	width: 50px;
+	height: 50px;
+	top: 20px;
+	left: 1075px;
+}
+#volume_on {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	background: url('../assets/sound_on.png') no-repeat 5px 7px;
+	cursor: pointer;
+}
+#volume_off {
+	position: absolute;
+	z-index: 5;
+	width: 50px;
+	height: 50px;
+	background: url('../assets/sound_off.png') no-repeat 5px 12px;
+	display:none;
+	cursor: pointer;
+}

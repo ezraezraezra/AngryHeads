@@ -43,14 +43,14 @@ $(document).ready(function() {
 				
 				players = data.players;
 				
-				console.log("Current player index: "+ index_player);
-				console.log(data);
+				//console.log("Current player index: "+ index_player);
+				//console.log(data);
 				GAME_CANVAS.constructEnemy(data);
 			});
 			
 			socket.on('trajectory', function (data) {
-				console.log(data);
-				console.log("Received trajectory from server");
+				//console.log(data);
+				//console.log("Received trajectory from server");
 				if(my_streamId != parseInt(data.data_echo.player_id, 10)) {
 					sling_release.play();
 					gasps_audio.play();
@@ -65,19 +65,35 @@ $(document).ready(function() {
 			
 			socket.on('new_player', function (data) {
 				players = data.new_player;
-				console.log(players);
+				//console.log(players);
 			});
 	
-	// background_music.addEventListener('ended', function() {
-		// this.currentTime = 0;
-		// this.play();
-	// }, false);
-// 	
-	// setTimeout(function() {
-		// console.log("start music");
-		// background_music.play();
-		// background_music.volume = .5;
-	// }, 2000);
+	background_music.addEventListener('ended', function() {
+		this.currentTime = 0;
+		this.play();
+	}, false);
+	
+	setTimeout(function() {
+		console.log("start music");
+		background_music.play();
+		background_music.volume = .5;
+	}, 2000);
+	
+	$("#volume").click(function() {
+		//console.log("volume clicked");
+		console.log($("#volume_on").css("display"));
+		if($("#volume_on").css("display") == 'block') {
+			background_music.volume = 0;
+			$("#volume_on").css("display", "none");
+			$("#volume_off").css("display", "block");
+		}
+		else {
+			background_music.volume = .5;
+			$("#volume_on").css("display", "block");
+			$("#volume_off").css("display", "none");
+		}
+		
+	});
 	
 	
 	
@@ -88,6 +104,8 @@ $(document).ready(function() {
 	});
 	
 	$("#container_game").mousemove(function(mousePosition) {
+		console.log("Current mousePosition.pageY: "+mousePosition.pageY);
+		console.log("Current mousePosition.pageX: "+mousePosition.pageX);
 		if(my_streamId == players[index_player]) {
 		
 			$("#missle").mousedown(function() {
@@ -102,7 +120,7 @@ $(document).ready(function() {
 			});
 			
 			if(isPressed === true) {
-				if(mousePosition.pageY > 326 && mousePosition.pageX < 160) {
+				if(mousePosition.pageX > 38 && mousePosition.pageX < 160 && mousePosition.pageY < 470 && mousePosition.pageY > 326) {
 					if(sling_pull_counter === 0) {
 						sling_pull.play();
 						sling_pull_counter += 1;
@@ -149,7 +167,7 @@ $(document).ready(function() {
 			case "left":
 				$("#missle").css("left", numberX + missleStart.x);
 		 		$("#missle").css("top", missleStart.y - trajectory_results[numberX]);
-		 		console.log("Left called");
+		 		//console.log("Left called");
 				break;
 			case "down":
 				$("#missle").css("top", missleStart.y - trajectory_results[numberX] + numberY);
@@ -193,14 +211,14 @@ $(document).ready(function() {
 			}
 			// If else I can still move down
 			else if ( (missleStart.y - trajectory_results[numberX] + numberY + 80/*75*/ < 500) ) {
-				console.log('down');
-				console.log(numberY);
+				//console.log('down');
+				//console.log(numberY);
 				numberY += 3;//2;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX, numberY, "down");}, 0.3);
 			}
 			else {
-				console.log('reset');
+				//console.log('reset');
 				BOUNCES_ALLOWED = 0;
 				ground_hit[0].play();
 				$("#missle").css("top", 425);
@@ -215,7 +233,6 @@ $(document).ready(function() {
 					status : temp_status
 				});
 				
-				
 				clearTimeout(t);
 				var t = setTimeout(function() {resetSling();}, 1500);
 			}
@@ -224,7 +241,7 @@ $(document).ready(function() {
 		// Stop me
 		}
 		else {
-			console.log("Outside");
+			//console.log("Outside");
 			BOUNCES_ALLOWED = 0;
 			//ground_hit[0].play();
 			$("#missle").css("top", 425);
@@ -239,7 +256,6 @@ $(document).ready(function() {
 				status : temp_status
 			});
 			
-			
 			clearTimeout(t);
 			var t = setTimeout(function() {resetSling();}, 1500);
 		}
@@ -249,8 +265,6 @@ $(document).ready(function() {
 		$("#missle").css({top : 325, left: 120});
 		
 		switchVideoFeed();
-		
-		
 		GAME_CANVAS.updateScore();
 	}
 });

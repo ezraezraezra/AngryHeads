@@ -74,6 +74,10 @@
 		</div>
 		<canvas id="game_canvas" width="1152" height="500"></canvas>
 		<div id="container_game">
+			<div id="volume">
+				<div id="volume_on"></div>
+				<div id="volume_off"></div>
+			</div>
 			<div id="missle"></div>
 			<div id="player_status"></div>
 			<div id="container_next_player">

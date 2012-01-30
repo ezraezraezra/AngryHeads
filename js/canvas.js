@@ -168,6 +168,7 @@ var GAME_CANVAS = function() {
 		cxt.fillText("Level: "+level, 950, 70);
 	}
 	
+	
 	var ENEMY = function(_x,_y,_color, _mouth, _state) {
 		var x = _x;
 		var y = _y;
