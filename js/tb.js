@@ -201,9 +201,13 @@
 */				
 				my_streamId = stream.streamId;
 				// TODO tell server of my ability to play
-				socket.emit('player_id', {
+				game_var.socketValue().emit('player_id', {
 						player_id : my_streamId
 				});
+				
+				// socket.emit('player_id', {
+						// player_id : my_streamId
+				// });
 				
 				$("#module_button_close").fadeIn("slow");
 				//return;
@@ -367,9 +371,12 @@
 				$('#missle').html(curr_player);
 				
 				if(my_streamId == players[temp_id]) {
-					socket.emit('player_next', {
+					game_var.socketValue().emit('player_next', {
 						index_player : index_player
 					});
+					// socket.emit('player_next', {
+						// index_player : index_player
+					// });
 				}
 				
 			//}

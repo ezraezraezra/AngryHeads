@@ -10,11 +10,38 @@
  * Date:        November 2011
  * 
  */
-var socket;
-var background_music = new Audio("assets/house_made-mike_vekris.mp3");
+//var socket;
 var player_count;
 
+var game_var;
+
 $(document).ready(function() {
+	game_var = new GAME();
+});
+
+var GAME = function() {
+	
+	var socket;
+	
+	// jQuery DOM objects
+	// Set only once to easily track & modify if needed
+	var $DOM = {
+		volume : $("#volume"),
+		volume_on : $("#volume_on"),
+		volume_off : $("#volume_off"),
+		module_button_close : $("#module_button_close"),
+		module_camera : $("#module_camera"),
+		modal_cover : $("#modal_cover"),
+		main_title : $("#main_title"),
+		container_game : $("#container_game"),
+		missle : $("#missle")
+	};
+	var audio = {
+		gasps : new Audio("assets/gasps6.mp3"),
+		sling_pull : new Audio("assets/sling_pull.mp3"),
+		sling_release : new Audio("assets/sling_release.mp3"),
+		background : new Audio("assets/house_made-mike_vekris.mp3")
+	}
 	var isPressed = false;
 	var BOUNCES_ALLOWED = 0;
 	var launch_missle = false;
@@ -23,12 +50,6 @@ $(document).ready(function() {
 		x : 0,
 		y : 0
 	};
-	var gasps_audio = new Audio("assets/gasps6.mp3");
-	var sling_pull = new Audio("assets/sling_pull.mp3");
-	var sling_release = new Audio("assets/sling_release.mp3");
-	//var background_music = new Audio("assets/house_made-mike_vekris.mp3");
-	//http://subs.freesoundtrackmusic.com/freemusic?TRACKLISTINGGET|NEWEST|THEMES|BLANK|0|TRACKLISTING|KEYWORD|whimsical|NOT%20USED|NOT%20USED|NOT%20USED
-	
 	var sling_pull_counter = 0;
 	var ground_hit = new Array();
 	
@@ -36,141 +57,140 @@ $(document).ready(function() {
 		ground_hit[x] = new Audio("assets/node_hit.mp3");
 	}
 	
-	socket = io.connect('http://localhost:8005');
-			socket.on('start', function (data) {
-				player_count = parseInt(data.player_count, 10);
-				index_player = parseInt(data.current_player_index, 10);
-				
-				players = data.players;
-				
-				//console.log("Current player index: "+ index_player);
-				//console.log(data);
-				GAME_CANVAS.constructEnemy(data);
-			});
+	startSocketListeners();
+	startEventListeners();
+	startMusic();
+	
+	function startMusic() {
+		setTimeout(function() {
+			audio.background.play();
+			audio.background.volume = .5;
+		}, 2000);
+	}
+	
+	function startSocketListeners() {
+		socket = io.connect('http://localhost:8005');
 			
-			socket.on('trajectory', function (data) {
-				//console.log(data);
-				//console.log("Received trajectory from server");
-				if(my_streamId != parseInt(data.data_echo.player_id, 10)) {
-					sling_release.play();
-					gasps_audio.play();
-					sling_pull_counter += 1;
+		socket.on('start', function (data) {
+			player_count = parseInt(data.player_count, 10);
+			index_player = parseInt(data.current_player_index, 10);
+			
+			players = data.players;
+			GAME_CANVAS.constructEnemy(data);
+		});
+		
+		socket.on('trajectory', function (data) {
+			if(my_streamId != parseInt(data.data_echo.player_id, 10)) {
+				audio.sling_release.play();
+				audio.gasps.play();
+				sling_pull_counter += 1;
+				
+				missleStart.y = data.data_echo.start_y;
+				missleStart.x = data.data_echo.start_x;
+				trajectory_results = trajectory.calculate(data.data_echo.sling_x, data.data_echo.sling_y, missleStart.x, missleStart.y);
+				moveMissle(0,0, "left");
+			}
+		});
+		
+		socket.on('new_player', function (data) {
+			players = data.new_player;
+		});
+	}
+	
+	function startEventListeners() {
+		audio.background.addEventListener('ended', function() {
+			this.currentTime = 0;
+			this.play();
+		}, false);
+		
+		// Volume Listener
+		$DOM.volume.click(function() {
+			//console.log("volume clicked");
+			console.log($("#volume_on").css("display"));
+			if($DOM.volume_on.css("display") == 'block') {
+				audio.background.volume = 0;
+				$DOM.volume_on.css("display", "none");
+				$DOM.volume_off.css("display", "block");
+			}
+			else {
+				audio.background.volume = .5;
+				$DOM.volume_on.css("display", "block");
+				$DOM.volume_off.css("display", "none");
+			}
+		});
+		
+		// Modal Close Listener
+		$DOM.module_button_close.click(function() {
+			$DOM.module_camera.animate({"top" :  "-500px"}, "slow");
+			$DOM.modal_cover.fadeOut("slow");
+			$DOM.main_title.fadeIn("slow");
+		});
+		
+		// Mouse Listener
+		$DOM.container_game.mousemove(function(mousePosition) {
+			if(my_streamId == players[index_player]) {
+				$DOM.missle.mousedown(function() {
+					isPressed = true;	
+				});
+				$DOM.container_game.mouseup(function() {
+					isPressed = false;
+				});
+				$DOM.missle.mouseup(function() {
+					launch_missle = true;
+				});
+				
+				if(isPressed === true) {
+					if(mousePosition.pageX > 38 && mousePosition.pageX < 160 && mousePosition.pageY < 470 && mousePosition.pageY > 326) {
+						if(sling_pull_counter === 0) {
+							audio.sling_pull.play();
+							sling_pull_counter += 1;
+						}
+						$DOM.missle.css("top", mousePosition.pageY - 37/*125*/);
+						$DOM.missle.css("left", mousePosition.pageX - 37/*125*/);
+						missleStart.y = mousePosition.pageY - 37/*125*/;
+						missleStart.x = mousePosition.pageX - 37/*125*/;
+						GAME_CANVAS.updateSling(missleStart.x, missleStart.y);
+					}
+					else {
+						launch_missle = false;
+					}
+				}
+			}
+		}).mouseup(function() {
+			if(my_streamId == players[index_player]) {
+				if(launch_missle === true && isPressed === true) {
+					launch_missle = false;
+					isPressed = false;
 					
-					missleStart.y = data.data_echo.start_y;
-					missleStart.x = data.data_echo.start_x;
-					trajectory_results = trajectory.calculate(data.data_echo.sling_x, data.data_echo.sling_y, missleStart.x, missleStart.y);
+					audio.sling_release.play();
+					audio.gasps.play();
+					sling_pull_counter = 0;
+					// Launch object
+					trajectory_results = trajectory.calculate(150,363,missleStart.x,missleStart.y);
+					
+					socket.emit('player_move', {
+							sling_x : 150,
+							sling_y : 363,
+							start_x : missleStart.x,
+							start_y : missleStart.y,
+							player_id : my_streamId
+							});
+					
 					moveMissle(0,0, "left");
 				}
-			});
-			
-			socket.on('new_player', function (data) {
-				players = data.new_player;
-				//console.log(players);
-			});
-	
-	background_music.addEventListener('ended', function() {
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	
-	setTimeout(function() {
-		console.log("start music");
-		background_music.play();
-		background_music.volume = .5;
-	}, 2000);
-	
-	$("#volume").click(function() {
-		//console.log("volume clicked");
-		console.log($("#volume_on").css("display"));
-		if($("#volume_on").css("display") == 'block') {
-			background_music.volume = 0;
-			$("#volume_on").css("display", "none");
-			$("#volume_off").css("display", "block");
-		}
-		else {
-			background_music.volume = .5;
-			$("#volume_on").css("display", "block");
-			$("#volume_off").css("display", "none");
-		}
-		
-	});
-	
-	
-	
-	$("#module_button_close").click(function() {
-		$("#module_camera").animate({"top" :  "-500px"}, "slow");
-		$("#modal_cover").fadeOut("slow");
-		$("#main_title").fadeIn("slow");
-	});
-	
-	$("#container_game").mousemove(function(mousePosition) {
-		console.log("Current mousePosition.pageY: "+mousePosition.pageY);
-		console.log("Current mousePosition.pageX: "+mousePosition.pageX);
-		if(my_streamId == players[index_player]) {
-		
-			$("#missle").mousedown(function() {
-				isPressed = true;
-				
-			});
-			$("#container_game").mouseup(function() {
-				isPressed = false;
-			});
-			$("#missle").mouseup(function() {
-				launch_missle = true;
-			});
-			
-			if(isPressed === true) {
-				if(mousePosition.pageX > 38 && mousePosition.pageX < 160 && mousePosition.pageY < 470 && mousePosition.pageY > 326) {
-					if(sling_pull_counter === 0) {
-						sling_pull.play();
-						sling_pull_counter += 1;
-					}
-					$("#missle").css("top", mousePosition.pageY - 37/*125*/);
-					$("#missle").css("left", mousePosition.pageX - 37/*125*/);
-					missleStart.y = mousePosition.pageY - 37/*125*/;
-					missleStart.x = mousePosition.pageX - 37/*125*/;
-					GAME_CANVAS.updateSling(missleStart.x, missleStart.y);
-				}
-				else {
-					launch_missle = false;
-				}
 			}
-		}
-	}).mouseup(function() {
-		if(my_streamId == players[index_player]) {
-			if(launch_missle === true && isPressed === true) {
-				launch_missle = false;
-				isPressed = false;
-				
-				sling_release.play();
-				gasps_audio.play();
-				sling_pull_counter = 0;
-				// Launch object
-				trajectory_results = trajectory.calculate(150,363,missleStart.x,missleStart.y);
-				
-				socket.emit('player_move', {
-						sling_x : 150,
-						sling_y : 363,
-						start_x : missleStart.x,
-						start_y : missleStart.y,
-						player_id : my_streamId
-						});
-				
-				moveMissle(0,0, "left");
-				
-			}
-		}
-	});
+		});	
+	}
 	
 	function moveMissle(numberX, numberY, direction) {
 		switch(direction) {
 			case "left":
-				$("#missle").css("left", numberX + missleStart.x);
-		 		$("#missle").css("top", missleStart.y - trajectory_results[numberX]);
+				$DOM.missle.css("left", numberX + missleStart.x);
+		 		$DOM.missle.css("top", missleStart.y - trajectory_results[numberX]);
 		 		//console.log("Left called");
 				break;
 			case "down":
-				$("#missle").css("top", missleStart.y - trajectory_results[numberX] + numberY);
+				$DOM.missle.css("top", missleStart.y - trajectory_results[numberX] + numberY);
 				break;
 			default:
 				// Do nothing
@@ -189,13 +209,13 @@ $(document).ready(function() {
 		
 		if(numberX < trajectory_results.length - 1) {
 			// If I can still move left
-			if( (((missleStart.y - trajectory_results[numberX]) + 75) < 500)  && (numberX + missleStart.x + 75 < $("#container_game").width() ) && (BOUNCES_ALLOWED <=5)) {
+			if( (((missleStart.y - trajectory_results[numberX]) + 75) < 500)  && (numberX + missleStart.x + 75 < $DOM.container_game.width() ) && (BOUNCES_ALLOWED <=5)) {
 
 				numberX += 5;//4;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX,numberY, "left");}, 0.3);
 			}
-			else if ( (numberX + missleStart.x + 75 < $("#container_game").width()) && (BOUNCES_ALLOWED <=5) ) {// && missleStart.y <= 376 ) {
+			else if ( (numberX + missleStart.x + 75 < $DOM.container_game.width()) && (BOUNCES_ALLOWED <=5) ) {// && missleStart.y <= 376 ) {
 				ground_hit[BOUNCES_ALLOWED].play();
 
 				BOUNCES_ALLOWED += 1;
@@ -211,66 +231,54 @@ $(document).ready(function() {
 			}
 			// If else I can still move down
 			else if ( (missleStart.y - trajectory_results[numberX] + numberY + 80/*75*/ < 500) ) {
-				//console.log('down');
-				//console.log(numberY);
 				numberY += 3;//2;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX, numberY, "down");}, 0.3);
 			}
 			else {
-				//console.log('reset');
-				BOUNCES_ALLOWED = 0;
-				ground_hit[0].play();
-				$("#missle").css("top", 425);
-				GAME_CANVAS.updateEnemyMouth(0);
-				
-				var temp_level = GAME_CANVAS.getLevel();
-				var temp_tries = GAME_CANVAS.getTries();
-				var temp_status = GAME_CANVAS.getStatus();
-				socket.emit('enemy_status', {
-					level : temp_level,
-					tries : temp_tries,
-					status : temp_status
-				});
-				
-				clearTimeout(t);
-				var t = setTimeout(function() {resetSling();}, 1500);
+				stopBounce(true);
 			}
-		
-		
 		// Stop me
 		}
 		else {
-			//console.log("Outside");
-			BOUNCES_ALLOWED = 0;
-			//ground_hit[0].play();
-			$("#missle").css("top", 425);
-			GAME_CANVAS.updateEnemyMouth(0);
-			
-			var temp_level = GAME_CANVAS.getLevel();
-			var temp_tries = GAME_CANVAS.getTries();
-			var temp_status = GAME_CANVAS.getStatus();
-			socket.emit('enemy_status', {
-				level : temp_level,
-				tries : temp_tries,
-				status : temp_status
-			});
-			
-			clearTimeout(t);
-			var t = setTimeout(function() {resetSling();}, 1500);
+			stopBounce(false);
 		}
 	}
 	
-	function resetSling() {
-		$("#missle").css({top : 325, left: 120});
+	function stopBounce(play_ground_hit) {
+		BOUNCES_ALLOWED = 0;
+		$DOM.missle.css("top", 425);
+		GAME_CANVAS.updateEnemyMouth(0);
 		
+		if(play_ground_hit === true) {
+			ground_hit[0].play();
+		}
+		
+		socket.emit('enemy_status', {
+			level : GAME_CANVAS.getLevel(),
+			tries : GAME_CANVAS.getTries(),
+			status : GAME_CANVAS.getStatus()
+		});
+		
+		clearTimeout(t);
+		var t = setTimeout(function() {resetSling();}, 1500);
+	}
+	
+	function resetSling() {
+		$DOM.missle.css({top : 325, left: 120});
 		switchVideoFeed();
 		GAME_CANVAS.updateScore();
 	}
-});
+	
+	return {
+		socketValue : function() {
+			return socket;
+		}
+	}
+}
 
 $(window).bind('beforeunload', function() {
-	socket.emit('player_remove', {
+	game_var.socketValue().emit('player_remove', {
 		action : 'remove',
 		player_id : my_streamId
 	});
