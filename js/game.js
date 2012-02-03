@@ -11,7 +11,7 @@
  * 
  */
 //var socket;
-var player_count;
+//var player_count;
 
 var game_var;
 
@@ -20,9 +20,8 @@ $(document).ready(function() {
 });
 
 var GAME = function() {
-	
 	var socket;
-	
+	var player_count;
 	// jQuery DOM objects
 	// Set only once to easily track & modify if needed
 	var $DOM = {
@@ -105,8 +104,6 @@ var GAME = function() {
 		
 		// Volume Listener
 		$DOM.volume.click(function() {
-			//console.log("volume clicked");
-			console.log($("#volume_on").css("display"));
 			if($DOM.volume_on.css("display") == 'block') {
 				audio.background.volume = 0;
 				$DOM.volume_on.css("display", "none");
@@ -140,6 +137,7 @@ var GAME = function() {
 				});
 				
 				if(isPressed === true) {
+					// Player clicks on the missle
 					if(mousePosition.pageX > 38 && mousePosition.pageX < 160 && mousePosition.pageY < 470 && mousePosition.pageY > 326) {
 						if(sling_pull_counter === 0) {
 							audio.sling_pull.play();
@@ -187,8 +185,7 @@ var GAME = function() {
 			case "left":
 				$DOM.missle.css("left", numberX + missleStart.x);
 		 		$DOM.missle.css("top", missleStart.y - trajectory_results[numberX]);
-		 		//console.log("Left called");
-				break;
+		 		break;
 			case "down":
 				$DOM.missle.css("top", missleStart.y - trajectory_results[numberX] + numberY);
 				break;
@@ -210,14 +207,35 @@ var GAME = function() {
 		if(numberX < trajectory_results.length - 1) {
 			// If I can still move left
 			if( (((missleStart.y - trajectory_results[numberX]) + 75) < 500)  && (numberX + missleStart.x + 75 < $DOM.container_game.width() ) && (BOUNCES_ALLOWED <=5)) {
-
+				missleAction("continue", numberX, numberY);
+			}
+			// Rebound
+			else if ( (numberX + missleStart.x + 75 < $DOM.container_game.width()) && (BOUNCES_ALLOWED <=5) ) {// && missleStart.y <= 376 ) {
+				missleAction("rebound", numberX, numberY);
+			}
+			// If else I can still move down
+			else if ( (missleStart.y - trajectory_results[numberX] + numberY + 80/*75*/ < 500) ) {
+				missleAction("down", numberX, numberY);
+			}
+			else {
+				stopBounce(true);
+			}
+		}
+		// Stop me
+		else {
+			stopBounce(false);
+		}
+	}
+	
+	function missleAction(direction, numberX, numberY) {
+		switch(direction) {
+			case "continue":
 				numberX += 5;//4;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX,numberY, "left");}, 0.3);
-			}
-			else if ( (numberX + missleStart.x + 75 < $DOM.container_game.width()) && (BOUNCES_ALLOWED <=5) ) {// && missleStart.y <= 376 ) {
+				break;
+			case "rebound":
 				ground_hit[BOUNCES_ALLOWED].play();
-
 				BOUNCES_ALLOWED += 1;
 				var pre_numX = numberX;
 				numberX = 0;
@@ -228,20 +246,14 @@ var GAME = function() {
 				trajectory_results = trajectory.recalculate();
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX,numberY, "left");}, 0.3);
-			}
-			// If else I can still move down
-			else if ( (missleStart.y - trajectory_results[numberX] + numberY + 80/*75*/ < 500) ) {
+				break;
+			case "down":
 				numberY += 3;//2;
 				GAME_CANVAS.updateEnemyMouth(1);
 				var t = setTimeout(function() {moveMissle(numberX, numberY, "down");}, 0.3);
-			}
-			else {
-				stopBounce(true);
-			}
-		// Stop me
-		}
-		else {
-			stopBounce(false);
+				break;
+			default:
+				
 		}
 	}
 	
@@ -273,6 +285,12 @@ var GAME = function() {
 	return {
 		socketValue : function() {
 			return socket;
+		},
+		getPlayerCount : function() {
+			return player_count;
+		},
+		increasePlayerCount : function(increase_amount) {
+			player_count += increase_amount;
 		}
 	}
 }

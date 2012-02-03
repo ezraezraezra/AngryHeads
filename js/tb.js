@@ -10,11 +10,6 @@
  * Date:        November 2011
  * 
  */
-
-//var apiKey = 7058002; // OpenTok sample API key. Replace with your own API key.
-//		var sessionId = '14685d1ac5907f4a2814fed28294d3f797f34955'; // Replace with your session ID.
-//		var token = 'devtoken'; // Should not be hard-coded.
-								// Add to the page using the OpenTok server-side libraries.
 		var session;
 		var publisher;
 		var subscribers = {};
@@ -106,49 +101,15 @@
 		function streamDestroyedHandler(event) {
 			// This signals that a stream was destroyed. Any Subscribers will automatically be removed.
 			// This default behaviour can be prevented using event.preventDefault()
-			console.log("a stream was destroyed");
-			console.log(event);
+			//console.log("a stream was destroyed");
+			//console.log(event);
 			var temp_index;
 			
 			
 			if($("#missle").has('object')) {
-				console.log("streamDestroyedHandler about to do swtichVideoFeed");
+				//console.log("streamDestroyedHandler about to do swtichVideoFeed");
 				switchVideoFeed();
 			}
-			
-			// for(var x = 0; x < players.length; x++) {
-				// for(var y = 0; y < event.streams.length; y++) {
-					// console.log("comparing: players[x].toString: "+players[x].toString());
-					// console.log("to: event.streams[y].streamId.toString(): "+ event.streams[y].streamId.toString());
-					// if(players[x].toString().indexOf(event.streams[y].streamId.toString()) != -1 ) {
-						// temp_index = x;
-						// var temp_id = event.streams[y].streamId.toString();
-// 						
-						// if(temp_id.indexOf(players[index_player].toString()) != -1) {
-							// console.log("About to do switchVideoFeed");
-							// switchVideoFeed();
-						// }
-// 						
-						// // console.log("comparing in streamDestroyed");
-						// // if(temp_id.indexOf(players[index_player]) != -1 ) {
-							// // console.log("About to do switchVideoFeed");
-							// // switchVideoFeed();
-						// // }
-// 						
-// 						
-						// //players.splice(temp_index - 1 ,1);
-						// players.splice(temp_index,1);
-						// console.log("This is the updated array");
-						// console.log(players);
-// 						
-// 						
-					// }
-				// }
-// 				
-				// // players.splice(temp_index - 1 ,1);
-				// // console.log("This is the updated array");
-				// // console.log(players);
-			// }
 		}
 
 		function sessionDisconnectedHandler(event) {
@@ -180,71 +141,31 @@
 
 		function addStream(stream) {
 			// Check if this is the stream that I am publishing, and if so do not publish.
-			if (stream.connection.connectionId == session.connection.connectionId) {
-/*
-				// Create missle
-				var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
-				subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
-				document.getElementById("missle").appendChild(subscriberDiv);
-				
-				// Rounded corners
-				setTimeout(function() {
-					console.log(stream.streamId);
-					var curr_id = $("[id^=subscriber_"+ stream.streamId +"]").attr("id");
-					document.getElementById(curr_id).style.borderRadius = '75px';
-				}, 2000);
-				
-				var subscriberProps = {width: 75,
-									   height: 75,
-									   subscribeToAudio: false};
-				subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
-*/				
+			if (stream.connection.connectionId == session.connection.connectionId) {			
 				my_streamId = stream.streamId;
 				// TODO tell server of my ability to play
 				game_var.socketValue().emit('player_id', {
 						player_id : my_streamId
 				});
 				
-				// socket.emit('player_id', {
-						// player_id : my_streamId
-				// });
-				
 				$("#module_button_close").fadeIn("slow");
-				//return;
 			}
 			
-//			setTimeout(function() { addStreamVideo(stream); }, 1000);
-		
-//		}
-		
-		
-//		function addStreamVideo(stream) {
-			console.log("addStreamVideo");	
+			//console.log("addStreamVideo");	
 			// Add player to waiting cue
 			var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
 			subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
 			var container = "";
-			//var current_status = "";
-			// console.log("Current index_player:" + index_player);
-			// console.log("Current streamId: "+ players[index_player]);
-			// console.log("current streamId: "+ players[0]);
-			// console.log("all players:");
-			// console.log(players);
-			// console.log("the steamId: "+ stream.streamId);
-			
-			
-//			if(first_connect === true) {
-//				first_connect = false;
-				
-//				setTimeout(function() {
-					console.log("This is players length: "+ players.length);
-					console.log("inside timeout, comparing index_player: "+ index_player);
-					console.log("inside timeout, comparing players[index]: "+ players[index_player]);
-					console.log("inside timeout, comparing stream.streamId: "+ stream.streamId);
-					if(/*players.length == 1 /*player_count == 1*/ ((players.length === 0) && player_count == 1) || (players[index_player] == stream.streamId)) {
-						console.log("players[index_player] == stream.streamId");
+
+					// console.log("This is players length: "+ players.length);
+					// console.log("inside timeout, comparing index_player: "+ index_player);
+					// console.log("inside timeout, comparing players[index]: "+ players[index_player]);
+					// console.log("inside timeout, comparing stream.streamId: "+ stream.streamId);
+					if(/*players.length == 1 /*player_count == 1*/ ((players.length === 0) && game_var.getPlayerCount() /*player_count*/ == 1) || (players[index_player] == stream.streamId)) {
+						//console.log("players[index_player] == stream.streamId");
 					container = "missle";
-					player_count += 1;
+					//player_count += 1;
+					game_var.increasePlayerCount(1);
 					//current_status = "it's your turn";
 						if(stream.streamId == my_streamId) {
 							current_status = "it's your turn";
@@ -268,51 +189,14 @@
 					subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
 					
 					for(var i in players) {
-						console.log(i);
+						//console.log(i);
 						var curr_id = $("[id^=subscriber_"+ players[i] +"]").attr("id");
 						//console.log(curr_id);
 						document.getElementById(curr_id).style.borderRadius = '75px';
 						document.getElementById(curr_id).WebkitBorderRadius = '75px';
 						document.getElementById(curr_id).MozBorderRadius = '75px';
 					}
-					
-//				}, 4000);
-//			}
-//			else {
-				// console.log("outside timeout, comparing index_player: "+ index_player);
-					// console.log("outisde timeout, comparing players[index]: "+ players[index_player]);
-					// console.log("outisde timeout, comparing stream.streamId: "+ stream.streamId);
-// 			
-				// if(/*players.length == 0*/ /*player_count == 1*/ players[index_player] == stream.streamId) {
-					// container = "missle";
-					// player_count += 1;
-					// //current_status = "it's your turn";
-					// if(stream.streamId == parseInt(my_streamId, 10)) {
-						// current_status = "it's your turn";
-					// }
-					// else {
-						// current_status = "someone else's turn";
-					// }
-				// }
-				// else {
-					// container = "nex_player_holder";
-					// //current_status = "someone else's turn";
-				// }
-				// document.getElementById(container).appendChild(subscriberDiv);
-				// $("#player_status").html(current_status);
-// 				
-				// var subscriberProps = {width: 75,
-									   // height: 75,
-									   // subscribeToAudio: false};
-				// subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id, subscriberProps);
-// 				
-				// /*
-				 // * 
-				 // * players.push(stream.streamId);
-				 // * 
-				 // */
-// 				
-// 				
+									
 				// Rounded corners
 				setTimeout(function() {
 					//console.log(stream.streamId);
@@ -325,14 +209,6 @@
 						document.getElementById(curr_id).MozBorderRadius = '75px';
 					}
 				}, 1000);
-			// }
-			
-			
-			
-			// var subscriberDiv = document.createElement('div'); // Create a div for the subscriber to replace
-			// subscriberDiv.setAttribute('id', stream.streamId); // Give the replacement div the id of the stream as its id.
-			// document.getElementById("subscribers").appendChild(subscriberDiv);
-			// subscribers[stream.streamId] = session.subscribe(stream, subscriberDiv.id);
 		}
 
 		function show(id) {
@@ -374,10 +250,5 @@
 					game_var.socketValue().emit('player_next', {
 						index_player : index_player
 					});
-					// socket.emit('player_next', {
-						// index_player : index_player
-					// });
 				}
-				
-			//}
 		}
